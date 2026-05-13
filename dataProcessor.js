@@ -29,6 +29,14 @@ class DataProcessor {
               dataType = 'Agent Performance';
               storeName = 'agentData';
               await this.processAgentData(results.data, storeName);
+            } else if (fileName.includes('overall_performance')) {
+              dataType = 'Overall Performance';
+              storeName = 'performanceMetrics';
+              await this.processPerformanceMetricsData(results.data, storeName);
+            } else if (fileName.includes('csat_volume')) {
+              dataType = 'CSAT Volume';
+              storeName = 'csatData';
+              await this.processCSATVolumeData(results.data, storeName);
             }
 
             await storage.addData('uploadHistory', {
@@ -106,6 +114,53 @@ class DataProcessor {
         });
       }
     }
+  }
+
+  async processPerformanceMetricsData(data, storeName) {
+    for (const row of data) {
+      if (row.Conversations) {
+        await storage.addData(storeName, {
+          conversations: parseInt(row.Conversations) || 0,
+          avgWaitTime: this.parseTimeToSeconds(row['Average wait time']) || 0,
+          avgFirstResponseTime: this.parseTimeToSeconds(row['Average first response time']) || 0,
+          avgResponseTime: this.parseTimeToSeconds(row['Average response time']) || 0,
+          avgInteractionTime: this.parseTimeToSeconds(row['Average interaction time']) || 0,
+          avgResolutionTime: this.parseTimeToSeconds(row['Average resolution time']) || 0,
+          csatScore: parseFloat(row['Average CSAT score']) || 0,
+          timestamp: new Date().toISOString()
+        });
+      }
+    }
+  }
+
+  async processCSATVolumeData(data, storeName) {
+    for (const row of data) {
+      if (row.Conversations) {
+        await storage.addData(storeName, {
+          conversations: parseInt(row.Conversations) || 0,
+          satisfactory: parseInt(row['Satisfactory conversations']) || 0,
+          unsatisfactory: parseInt(row['Unsatisfactory conversations']) || 0,
+          starRatingsProvided: parseInt(row['Star ratings provided']) || 0,
+          avgStarRating: parseFloat(row['Average star rating']) || 0,
+          timestamp: new Date().toISOString()
+        });
+      }
+    }
+  }
+
+  parseTimeToSeconds(timeStr) {
+    if (!timeStr) return 0;
+    
+    let seconds = 0;
+    const hourMatch = timeStr.match(/(\d+)h/);
+    const minMatch = timeStr.match(/(\d+)m/);
+    const secMatch = timeStr.match(/(\d+)s/);
+    
+    if (hourMatch) seconds += parseInt(hourMatch[1]) * 3600;
+    if (minMatch) seconds += parseInt(minMatch[1]) * 60;
+    if (secMatch) seconds += parseInt(secMatch[1]);
+    
+    return seconds;
   }
 
   async analyzeAllData(filters = {}) {
