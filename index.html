@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Excellence Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <header class="dashboard-header">
+            <div class="header-content">
+                <div class="logo-section">
+                    <h1>📊 Customer Excellence Dashboard</h1>
+                    <p class="subtitle">Real-time Performance Analytics</p>
+                </div>
+                <div class="header-actions">
+                    <button id="uploadBtn" class="btn btn-primary">📤 Upload Data</button>
+                    <button id="exportBtn" class="btn btn-secondary">📥 Export Report</button>
+                    <button id="settingsBtn" class="btn btn-secondary">⚙️ Settings</button>
+                </div>
+            </div>
+        </header>
+
+        <div class="filter-panel">
+            <div class="filter-container">
+                <div class="filter-group">
+                    <label>Date Range:</label>
+                    <input type="date" id="startDate" class="filter-input">
+                    <span>to</span>
+                    <input type="date" id="endDate" class="filter-input">
+                </div>
+                <div class="filter-group">
+                    <label>Agent:</label>
+                    <select id="agentFilter" class="filter-input"><option value="">All Agents</option></select>
+                </div>
+                <div class="filter-group">
+                    <label>Category:</label>
+                    <select id="categoryFilter" class="filter-input">
+                        <option value="">All Categories</option>
+                        <option value="business">Business</option>
+                        <option value="individual">Individual</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Status:</label>
+                    <select id="statusFilter" class="filter-input">
+                        <option value="">All Status</option>
+                        <option value="resolved">Resolved</option>
+                        <option value="unresolved">Unresolved</option>
+                        <option value="reopened">Reopened</option>
+                    </select>
+                </div>
+                <button id="resetFilters" class="btn btn-tertiary">🔄 Reset</button>
+            </div>
+        </div>
+
+        <div id="uploadModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Upload Data</h2>
+                    <button class="close-btn" id="closeUploadModal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="upload-tabs">
+                        <button class="tab-btn active" data-tab="file-upload">File Upload</button>
+                        <button class="tab-btn" data-tab="manual-entry">Manual Entry</button>
+                    </div>
+                    <div id="file-upload" class="tab-content active">
+                        <div class="upload-area" id="uploadArea">
+                            <div class="upload-icon">📁</div>
+                            <p>Drag and drop CSV/Excel files here</p>
+                            <p class="upload-hint">or click to browse</p>
+                            <input type="file" id="fileInput" multiple accept=".csv,.xlsx,.xls" hidden>
+                        </div>
+                    </div>
+                    <div id="manual-entry" class="tab-content">
+                        <form id="manualDataForm">
+                            <div class="form-section">
+                                <h3>📞 Call Center Data</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Date:</label>
+                                        <input type="date" name="callDate" class="form-input">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Inbound Calls:</label>
+                                        <input type="number" name="inboundCalls" class="form-input">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Outbound Calls:</label>
+                                        <input type="number" name="outboundCalls" class="form-input">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Abandoned Calls:</label>
+                                        <input type="number" name="abandonedCalls" class="form-input">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>SLA %:</label>
+                                        <input type="number" name="sla" step="0.01" class="form-input">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-section">
+                                <h3>😊 CSAT Data</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Conversations:</label>
+                                        <input type="number" name="conversations" class="form-input">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Satisfactory:</label>
+                                        <input type="number" name="satisfactory" class="form-input">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Unsatisfactory:</label>
+                                        <input type="number" name="unsatisfactory" class="form-input">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Star Ratings Provided:</label>
+                                        <input type="number" name="starRatingsProvided" class="form-input">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Average Star Rating:</label>
+                                        <input type="number" name="avgStarRating" step="0.01" class="form-input">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-section">
+                                <h3>⏱️ Performance Metrics</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Avg Wait Time (seconds):</label>
+                                        <input type="number" name="avgWaitTime" class="form-input">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Avg First Response Time (seconds):</label>
+                                        <input type="number" name="avgFirstResponseTime" class="form-input">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Avg Response Time (seconds):</label>
+                                        <input type="number" name="avgResponseTime" class="form-input">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Avg Interaction Time (seconds):</label>
+                                        <input type="number" name="avgInteractionTime" class="form-input">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Avg Resolution Time (seconds):</label>
+                                        <input type="number" name="avgResolutionTime" class="form-input">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>CSAT Score:</label>
+                                        <input type="number" name="csatScore" step="0.01" class="form-input">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-section">
+                                <h3>🎫 Ticket Data</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Total Tickets:</label>
+                                        <input type="number" name="totalTickets" class="form-input">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Unresolved:</label>
+                                        <input type="number" name="unresolvedTickets" class="form-input">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Resolved:</label>
+                                        <input type="number" name="resolvedTickets" class="form-input">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Resolved within FCR:</label>
+                                        <input type="number" name="resolvedFCR" class="form-input">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Reopened:</label>
+                                        <input type="number" name="reopenedTickets" class="form-input">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Positive Surveys:</label>
+                                        <input type="number" name="positiveSurveys" class="form-input">
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">💾 Save Data</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <main class="dashboard-main">
+            <section class="kpi-section">
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-icon">📞</div>
+                        <div class="kpi-content">
+                            <p class="kpi-label">Total Conversations</p>
+                            <p class="kpi-value" id="totalConversations">0</p>
+                            <p class="kpi-trend" id="conversationsTrend">↕️ 0%</p>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon">😊</div>
+                        <div class="kpi-content">
+                            <p class="kpi-label">Satisfactory</p>
+                            <p class="kpi-value" id="satisfactoryConv">0</p>
+                            <p class="kpi-trend" id="satisfactoryTrend">↕️ 0%</p>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon">😞</div>
+                        <div class="kpi-content">
+                            <p class="kpi-label">Unsatisfactory</p>
+                            <p class="kpi-value" id="unsatisfactoryConv">0</p>
+                            <p class="kpi-trend" id="unsatisfactoryTrend">↕️ 0%</p>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon">⭐</div>
+                        <div class="kpi-content">
+                            <p class="kpi-label">Average Star Rating</p>
+                            <p class="kpi-value" id="avgStarRating">0.00</p>
+                            <p class="kpi-trend" id="starRatingTrend">↕️ 0%</p>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon">📊</div>
+                        <div class="kpi-content">
+                            <p class="kpi-label">CSAT Score</p>
+                            <p class="kpi-value" id="csatScore">0.00</p>
+                            <p class="kpi-trend" id="csatTrend">↕️ 0%</p>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon">📈</div>
+                        <div class="kpi-content">
+                            <p class="kpi-label">Total Calls</p>
+                            <p class="kpi-value" id="totalCalls">0</p>
+                            <p class="kpi-trend" id="callsTrend">↕️ 0%</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="charts-section">
+                <div class="chart-grid">
+                    <div class="chart-container">
+                        <h3>📈 CSAT Volume Trend</h3>
+                        <canvas id="csatTrendChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3>☎️ Call Activity</h3>
+                        <canvas id="callActivityChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3>✅ SLA Compliance</h3>
+                        <canvas id="slaChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3>🎫 Ticket Status</h3>
+                        <canvas id="ticketStatusChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3>🏢 Business Categories</h3>
+                        <canvas id="businessCategoryChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3>👤 Individual Categories</h3>
+                        <canvas id="individualCategoryChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3>🏆 Agent Performance</h3>
+                        <canvas id="agentPerformanceChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3>⏱️ Response Times</h3>
+                        <canvas id="responseTimeChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <section class="metrics-section">
+                <h2>📊 Detailed Performance Metrics</h2>
+                <div class="metrics-grid">
+                    <div class="metric-box">
+                        <h4>🎫 Ticket Management</h4>
+                        <div class="metric-item"><span>Total Tickets:</span><strong id="totalTickets">0</strong></div>
+                        <div class="metric-item"><span>Unresolved:</span><strong id="unresolvedTickets">0</strong></div>
+                        <div class="metric-item"><span>Resolved:</span><strong id="resolvedTickets">0</strong></div>
+                        <div class="metric-item"><span>Resolved within FCR:</span><strong id="resolvedFCR">0</strong> <span class="percentage" id="fcrPercentage">0%</span></div>
+                        <div class="metric-item"><span>Reopened:</span><strong id="reopenedTickets">0</strong></div>
+                        <div class="metric-item"><span>Positive Surveys:</span><strong id="positiveSurveys">0</strong></div>
+                    </div>
+                    <div class="metric-box">
+                        <h4>⏱️ Response Times</h4>
+                        <div class="metric-item"><span>Avg 1st Response:</span><strong id="avgFirstResponseDisplay">0h 0m</strong></div>
+                        <div class="metric-item"><span>Avg Response Time:</span><strong id="avgResponseDisplay">0h 0m</strong></div>
+                        <div class="metric-item"><span>Avg Wait Time:</span><strong id="avgWaitDisplay">0h 0m</strong></div>
+                        <div class="metric-item"><span>Avg Interaction Time:</span><strong id="avgInteractionDisplay">0h 0m</strong></div>
+                        <div class="metric-item"><span>Avg Resolution Time:</span><strong id="avgResolutionDisplay">0h 0m</strong></div>
+                        <div class="metric-item"><span>Avg Ticket Age:</span><strong id="avgTicketAge">0h 0m</strong></div>
+                    </div>
+                    <div class="metric-box">
+                        <h4>☎️ Call Operations</h4>
+                        <div class="metric-item"><span>Total Inbound:</span><strong id="totalInboundCalls">0</strong></div>
+                        <div class="metric-item"><span>Total Outbound:</span><strong id="totalOutboundCalls">0</strong></div>
+                        <div class="metric-item"><span>Total Abandoned:</span><strong id="totalAbandonedCalls">0</strong></div>
+                        <div class="metric-item"><span>Avg SLA Compliance:</span><strong id="avgSLA">0%</strong></div>
+                        <div class="metric-item"><span>Abandonment Rate:</span><strong id="abandonmentRate">0%</strong></div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="table-section">
+                <h2>🏆 Agent Performance Leaderboard</h2>
+                <div class="table-wrapper">
+                    <table id="agentTable" class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Agent Name</th>
+                                <th>Total Interactions</th>
+                                <th>Private Notes</th>
+                                <th>Responses</th>
+                                <th>Response Rate %</th>
+                                <th>Efficiency Score</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="table-section">
+                <h2>📋 Data Upload History</h2>
+                <div class="table-wrapper">
+                    <table id="dataHistoryTable" class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Upload Date</th>
+                                <th>File Name</th>
+                                <th>Records Count</th>
+                                <th>Data Type</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+
+        <footer class="dashboard-footer">
+            <p>© 2026 Customer Excellence Dashboard | Last Updated: <span id="lastUpdated">Never</span></p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+    <script src="storage.js"></script>
+    <script src="dataProcessor.js"></script>
+    <script src="chartManager.js"></script>
+    <script src="dashboard.js"></script>
+</body>
+</html>
